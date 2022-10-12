@@ -133,11 +133,19 @@ window.addEventListener("DOMContentLoaded", () => {
 
   const deadLine = '2022-10-14';
   function getTimeRemaining(endTime) {
-    const t = Date.parse(endTime) - Date.parse(new Date()),
-      days = Math.floor(t / (1000 * 60 * 60 * 24)),
-      hours = Math.floor(t / (1000 * 60 * 60) % 24),
-      minutes = Math.floor(t / (1000 / 60) % 60),
+    let days, hours, minutes, seconds;
+    const t = Date.parse(endTime) - Date.parse(new Date());
+    if (t < 0) {
+      days = 0;
+      hours = 0;
+      minutes = 0;
+      seconds = 0;
+    } else {
+      days = Math.floor(t / (1000 * 60 * 60 * 24));
+      hours = Math.floor(t / (1000 * 60 * 60) % 24);
+      minutes = Math.floor(t / (1000 / 60) % 60);
       seconds = Math.floor(t / 1000) % 60;
+    }
     return {
       'total': t,
       days,
@@ -167,6 +175,33 @@ window.addEventListener("DOMContentLoaded", () => {
     }
   }
   setClock('.timer', deadLine);
+
+  // Modal
+
+  const btns = document.querySelectorAll('[data-modal]'),
+    btnClose = document.querySelector('[data-close]'),
+    modalWindow = document.querySelector('.modal');
+  btns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      modalWindow.classList.toggle('active');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+  function closeModalWindow() {
+    modalWindow.classList.toggle('active');
+    document.body.style.overflow = '';
+  }
+  btnClose.addEventListener('click', closeModalWindow);
+  modalWindow.addEventListener('click', event => {
+    if (event.target === modalWindow) {
+      closeModalWindow();
+    }
+  });
+  document.addEventListener('keydown', event => {
+    if (event.code === 'Escape' && modalWindow.classList.contains('active')) {
+      closeModalWindow();
+    }
+  });
 });
 
 /***/ })
