@@ -101,12 +101,14 @@ window.addEventListener("DOMContentLoaded", () => {
     btnClose = document.querySelector('[data-close]'),
     modalWindow = document.querySelector('.modal');
 
-  btns.forEach(btn => {
-    btn.addEventListener('click', () => {
+  function openModal() {
+    modalWindow.classList.toggle('active');
+    document.body.style.overflow = 'hidden';
+    clearInterval(modalTimerId);
+  }
 
-      modalWindow.classList.toggle('active');
-      document.body.style.overflow = 'hidden';
-    })
+  btns.forEach(btn => {
+    btn.addEventListener('click', openModal)
   })
 
   function closeModalWindow() {
@@ -126,5 +128,96 @@ window.addEventListener("DOMContentLoaded", () => {
     if (event.code === 'Escape' && modalWindow.classList.contains('active')) {
       closeModalWindow();
     }
-  })
+  });
+
+  const modalTimerId = setTimeout(openModal, 15000);
+
+  function showModalByScroll() {
+    if (window.pageYOffset + document.documentElement.clientHeight >= document.documentElement.scrollHeight - 1) {
+      openModal();
+      window.removeEventListener('scroll', showModalByScroll);
+    }
+  }
+
+  window.addEventListener('scroll', showModalByScroll);
+
+
+  // Add menu item in html (OOP)
+
+  class MenuItems {
+    constructor(container= '.menu__field .container') {
+      this.container = container;
+      this.menuItemsArr = [];
+      this._fetchMenu();
+      this.render()
+    }
+
+    _fetchMenu() {
+      this.menuItemsArr = [
+        {
+          imgScr: 'img/tabs/vegy.jpg',
+          title: 'Меню "Фитнес',
+          alt: 'vegy',
+          description: `Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих 
+            овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой 
+            и высоким качеством!`,
+          price: '229'
+        },
+        {
+          imgScr: 'img/tabs/elite.jpg',
+          title: 'Меню “Премиум”',
+          alt: 'elite',
+          description: `В меню “Премиум” мы используем не только красивый дизайн упаковки, но и
+          качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в
+          ресторан!`,
+          price: '550'
+        },
+        {
+          imgScr: 'img/tabs/post.jpg',
+          title: 'Меню “Премиум”',
+          alt: 'post',
+          description: `Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие
+          продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество
+          белков за счет тофу и импортных вегетарианских стейков.`,
+          price: '430'
+        }
+      ]
+    }
+
+    render() {
+      const menuItemContainer = document.querySelector(this.container);
+
+      this.menuItemsArr.forEach(item => {
+        const element = new ItemMenu(item);
+
+        menuItemContainer.innerHTML += element.render();
+      })
+    }
+  }
+
+  class ItemMenu {
+    constructor({imgScr, title, description, price, alt}) {
+      this.imgSrc = imgScr;
+      this.title = title;
+      this.description = description;
+      this.price = price;
+      this.alt = alt;
+    }
+
+    render() {
+      return `<div class="menu__item">
+                <img src=${this.imgSrc} alt=${this.alt}>
+                <h3 class="menu__item-subtitle">${this.title}</h3>
+                <div class="menu__item-descr">${this.description}
+                </div>
+                <div class="menu__item-divider"></div>
+                <div class="menu__item-price">
+                    <div class="menu__item-cost">Цена:</div>
+                    <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
+                </div>
+            </div>`
+    }
+  }
+
+  new MenuItems();
 });
