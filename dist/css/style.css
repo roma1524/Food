@@ -57,6 +57,14 @@ a {
   font-weight: 400;
 }
 
+.display_hide {
+  display: none;
+}
+
+.display_show {
+  display: block;
+}
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -623,4 +631,18 @@ a {
   display: block;
   width: 280px;
   margin: 0 auto;
+}
+
+.fade {
+  animation-name: fade;
+  animation-duration: 1.5s;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0.1;
+  }
+  to {
+    opacity: 1;
+  }
 }
