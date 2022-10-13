@@ -633,7 +633,11 @@ a {
   margin: 0 auto;
 }
 
-.active {
+.hide {
+  display: none;
+}
+
+.show {
   display: block;
 }
 
