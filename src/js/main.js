@@ -272,7 +272,8 @@ window.addEventListener("DOMContentLoaded", () => {
     }, 4000);
   }
 
-  // Slider
+
+  // Slider and pagination
 
   const slides = document.querySelectorAll('.offer__slide'),
     prevBtn = document.querySelector('.offer__slider-prev'),
@@ -305,6 +306,41 @@ window.addEventListener("DOMContentLoaded", () => {
 
   setZero();
 
+  // ------------------------------------- Pagination-------------------------------------------------
+  const divElement = document.createElement('div'),
+    divElementParent = document.querySelector('.pagination');
+
+  divElement.classList.add('pagination__wrapp');
+
+  for (let i = 0; i < slides.length; i++) {
+    (i == 0) ? divElement.innerHTML += `<span class='pagination_span active' data-slide-to=${i + 1}></span>` :
+      divElement.innerHTML += `<span class='pagination_span' data-slide-to=${i + 1}></span>`;
+  }
+
+  divElementParent.append(divElement);
+
+  const paginationDots = document.querySelectorAll('.pagination_span');
+
+  paginationDots.forEach(dot => {
+    dot.addEventListener('click', (event) => {
+      const slideTo = event.target.getAttribute('data-slide-to');
+      slidIndex = slideTo;
+
+      offset = parseInt(width) * (slideTo - 1);
+      slidesField.style.transform = `translateX(-${offset}px)`;
+
+      setZero();
+      addActiveClassFromDots();
+    })
+  })
+
+  function addActiveClassFromDots() {
+    paginationDots.forEach(dot => dot.classList.remove('active'));
+    paginationDots[slidIndex - 1].classList.add('active');
+  }
+
+  // ------------------------------------- Pagination-------------------------------------------------
+
   nextBtn.addEventListener('click', () => {
     (offset == parseInt(width) * (slides.length - 1)) ? offset = 0 : offset += parseInt(width);
 
@@ -316,6 +352,7 @@ window.addEventListener("DOMContentLoaded", () => {
       slidIndex += 1;
     }
     setZero();
+    addActiveClassFromDots();
   })
 
   prevBtn.addEventListener('click', () => {
@@ -329,6 +366,8 @@ window.addEventListener("DOMContentLoaded", () => {
       slidIndex -= 1;
     }
     setZero();
+    addActiveClassFromDots();
   });
+
 
 });
