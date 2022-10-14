@@ -131,7 +131,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Timer
 
-  const deadLine = '2022-10-14';
+  const deadLine = '2022-10-18';
   function getTimeRemaining(endTime) {
     let days, hours, minutes, seconds;
     const t = Date.parse(endTime) - Date.parse(new Date());
@@ -215,79 +215,57 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Add menu item in html (OOP)
 
-  class MenuItems {
-    constructor() {
-      let container = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '.menu__field .container';
-      this.container = container;
-      this.menuItemsArr = [];
-      this._fetchMenu();
-      this.render();
-    }
-    _fetchMenu() {
-      this.menuItemsArr = [{
-        imgScr: 'img/tabs/vegy.jpg',
-        title: 'Меню "Фитнес',
-        alt: 'vegy',
-        description: `Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих 
-            овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой 
-            и высоким качеством!`,
-        price: '229'
-      }, {
-        imgScr: 'img/tabs/elite.jpg',
-        title: 'Меню “Премиум”',
-        alt: 'elite',
-        description: `В меню “Премиум” мы используем не только красивый дизайн упаковки, но и
-          качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в
-          ресторан!`,
-        price: '550'
-      }, {
-        imgScr: 'img/tabs/post.jpg',
-        title: 'Меню “Премиум”',
-        alt: 'post',
-        description: `Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие
-          продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество
-          белков за счет тофу и импортных вегетарианских стейков.`,
-        price: '430'
-      }];
-    }
-    render() {
-      const menuItemContainer = document.querySelector(this.container);
-      this.menuItemsArr.forEach(item => {
-        const element = new ItemMenu(item);
-        menuItemContainer.innerHTML += element.render();
-      });
-    }
-  }
-  class ItemMenu {
-    constructor(_ref) {
-      let {
-        imgScr,
-        title,
-        description,
-        price,
-        alt
-      } = _ref;
-      this.imgSrc = imgScr;
-      this.title = title;
-      this.description = description;
-      this.price = price;
+  class MenuCard {
+    constructor(src, alt, title, descr, price, parentSelector) {
+      this.src = src;
       this.alt = alt;
+      this.title = title;
+      this.descr = descr;
+      this.price = price;
+      for (var _len = arguments.length, classes = new Array(_len > 6 ? _len - 6 : 0), _key = 6; _key < _len; _key++) {
+        classes[_key - 6] = arguments[_key];
+      }
+      this.classes = classes;
+      this.parent = document.querySelector(parentSelector);
+      this.transfer = 27;
+      this.changeToUAH();
+    }
+    changeToUAH() {
+      this.price = this.price * this.transfer;
     }
     render() {
-      return `<div class="menu__item">
-                <img src=${this.imgSrc} alt=${this.alt}>
+      const element = document.createElement('div');
+      if (this.classes.length === 0) {
+        this.classes = "menu__item";
+        element.classList.add(this.classes);
+      } else {
+        this.classes.forEach(className => element.classList.add(className));
+      }
+      element.innerHTML = `
+                <img src=${this.src} alt=${this.alt}>
                 <h3 class="menu__item-subtitle">${this.title}</h3>
-                <div class="menu__item-descr">${this.description}
-                </div>
+                <div class="menu__item-descr">${this.descr}</div>
                 <div class="menu__item-divider"></div>
                 <div class="menu__item-price">
                     <div class="menu__item-cost">Цена:</div>
                     <div class="menu__item-total"><span>${this.price}</span> грн/день</div>
                 </div>
-            </div>`;
+            `;
+      this.parent.append(element);
     }
   }
-  new MenuItems();
+  getResource('http://localhost:3000/menu').then(data => {
+    data.forEach(_ref => {
+      let {
+        img,
+        altimg,
+        title,
+        descr,
+        price
+      } = _ref;
+      new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
+    });
+  });
 
   // Forms
 
@@ -298,9 +276,26 @@ window.addEventListener("DOMContentLoaded", () => {
     failure: 'Something wrong'
   };
   forms.forEach(form => {
-    postData(form);
+    bindPostData(form);
   });
-  function postData(form) {
+  const postData = async (url, data) => {
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        'Content-type': 'application/json; charset=utf-8'
+      },
+      body: data
+    });
+    return await res.json();
+  };
+  async function getResource(url) {
+    let res = await fetch(url);
+    if (!res.ok) {
+      throw new Error(`Could not fetch ${url}, status: ${res.status}`);
+    }
+    return await res.json();
+  }
+  function bindPostData(form) {
     form.addEventListener('submit', event => {
       event.preventDefault();
       let statusMessage = document.createElement('img');
@@ -309,27 +304,17 @@ window.addEventListener("DOMContentLoaded", () => {
       display: block;
       margin: 0 auto;`;
       form.insertAdjacentElement('afterend', statusMessage);
-      const request = new XMLHttpRequest();
-      request.open('POST', 'server.php');
-      request.setRequestHeader('Content-type', 'application/json; charset=utf-8');
       const formData = new FormData(form);
-      const object = {};
-      formData.forEach(function (value, key) {
-        object[key] = value;
-      });
-      const dataToJson = JSON.stringify(object);
-      request.send(dataToJson);
-      request.addEventListener('load', () => {
-        if (request.status === 200) {
-          console.log(request.response);
-          showMessage(message.success);
-          statusMessage.remove();
-          form.reset();
-        } else {
-          showMessage(message.failure);
-          statusMessage.remove();
-          form.reset();
-        }
+      const json = JSON.stringify(Object.fromEntries(formData.entries())); // Преобразуем объект FormData в формат JSON
+
+      postData('http://localhost:3000/requests', json).then(data => {
+        console.log(data);
+        showMessage(message.success);
+      }).catch(() => {
+        showMessage(message.failure);
+      }).finally(() => {
+        form.reset();
+        statusMessage.remove();
       });
     });
   }
@@ -351,6 +336,37 @@ window.addEventListener("DOMContentLoaded", () => {
       closeModalWindow();
     }, 4000);
   }
+
+  // Slider
+
+  const slide = document.querySelectorAll('.offer__slide'),
+    prevBtn = document.querySelector('.offer__slider-prev'),
+    nextBtn = document.querySelector('.offer__slider-next'),
+    currentSlid = document.querySelector('#current'),
+    totalSlide = document.querySelector('#total');
+  let slidIndex = 1;
+  totalSlide.textContent = slide.length > 10 ? slide.length : `0${slide.length}`;
+  showSlides(slidIndex);
+  function showSlides(n) {
+    if (n > slide.length) {
+      slidIndex = 1;
+    }
+    if (n < 1) {
+      slidIndex = slide.length;
+    }
+    slide.forEach(item => item.style.display = 'none');
+    slide[slidIndex - 1].style.display = 'block';
+    currentSlid.textContent = slidIndex > 10 ? slidIndex : `0${slidIndex}`;
+  }
+  function changeSlide(n) {
+    showSlides(slidIndex += n);
+  }
+  prevBtn.addEventListener('click', () => {
+    changeSlide(-1);
+  });
+  nextBtn.addEventListener('click', () => {
+    changeSlide(1);
+  });
 });
 
 /***/ })
