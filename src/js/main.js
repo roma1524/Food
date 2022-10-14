@@ -274,38 +274,61 @@ window.addEventListener("DOMContentLoaded", () => {
 
   // Slider
 
-  const slide = document.querySelectorAll('.offer__slide'),
+  const slides = document.querySelectorAll('.offer__slide'),
     prevBtn = document.querySelector('.offer__slider-prev'),
     nextBtn = document.querySelector('.offer__slider-next'),
     currentSlid = document.querySelector('#current'),
-    totalSlide = document.querySelector('#total');
+    totalSlide = document.querySelector('#total'),
+    slidesWrapper = document.querySelector('.offer__slider-wrapper'),
+    slidesField = document.querySelector('.offer__slider-inner'),
+    width = window.getComputedStyle(slidesWrapper).width;
+
   let slidIndex = 1;
+  let offset = 0;
 
-  totalSlide.textContent = slide.length > 10 ? slide.length :`0${slide.length}`;
+  slidesField.style.width = 100 * slides.length + '%';
+  slidesField.style.display = 'flex';
+  slidesField.style.transition = '.5s all';
+  slidesWrapper.style.overflow = 'hidden';
 
-  showSlides(slidIndex);
+  slides.forEach(slide => slide.style.width = width);
 
-  function showSlides(n) {
-    if (n > slide.length) {
+  function setZero() {
+    if (slides.length > 10) {
+      totalSlide.textContent = slides.length;
+      currentSlid.textContent = slidIndex
+    } else {
+      totalSlide.textContent = `0${slides.length}`;
+      currentSlid.textContent = `0${slidIndex}`;
+    }
+  }
+
+  setZero();
+
+  nextBtn.addEventListener('click', () => {
+    (offset == parseInt(width) * (slides.length - 1)) ? offset = 0 : offset += parseInt(width);
+
+    slidesField.style.transform = `translateX(-${offset}px)`;
+
+    if (slidIndex == slides.length) {
       slidIndex = 1;
+    } else {
+      slidIndex += 1;
     }
-    if (n < 1) {
-      slidIndex = slide.length;
-    }
-
-    slide.forEach(item => item.style.display = 'none');
-    slide[slidIndex - 1].style.display = 'block';
-    currentSlid.textContent = slidIndex > 10 ? slidIndex :`0${slidIndex}`;
-  }
-
-  function changeSlide(n) {
-    showSlides(slidIndex += n);
-  }
+    setZero();
+  })
 
   prevBtn.addEventListener('click', () => {
-    changeSlide(-1);
+    (offset == 0) ? offset = parseInt(width) * (slides.length - 1) : offset -= parseInt(width);
+
+    slidesField.style.transform = `translateX(-${offset}px)`;
+
+    if (slidIndex == 1) {
+      slidIndex = slides.length;
+    } else {
+      slidIndex -= 1;
+    }
+    setZero();
   });
-  nextBtn.addEventListener('click', () => {
-    changeSlide(1);
-  });
+
 });
