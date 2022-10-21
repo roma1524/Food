@@ -13,11 +13,13 @@
     "last 2 ios versions"
   ],
   "devDependencies": {
-    "@babel/core": "^7.7.0",
-    "@babel/preset-env": "^7.7.1",
+    "@babel/cli": "^7.19.3",
+    "@babel/core": "^7.19.6",
+    "@babel/preset-env": "^7.19.4",
     "autoprefixer": "^9.7.1",
-    "babel-loader": "^8.0.6",
+    "babel-loader": "^8.2.5",
     "browser-sync": "^2.26.7",
+    "core-js": "^3.25.5",
     "gulp": "^4.0.2",
     "gulp-clean-css": "^4.2.0",
     "gulp-postcss": "^8.0.0",
@@ -29,6 +31,7 @@
     "webpack-stream": "^5.2.1"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.12.1",
     "accepts": "^1.3.8",
     "acorn": "^6.4.2",
     "ajv": "^6.12.6",
@@ -603,5 +606,6 @@
     "url": "https://github.com/roma1524/Food/issues"
   },
   "homepage": "https://github.com/roma1524/Food#readme",
+  "keywords": [],
   "description": ""
 }

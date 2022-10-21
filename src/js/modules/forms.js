@@ -1,8 +1,9 @@
 import {openModal, closeModalWindow} from "./modal";
+import {postData} from "../services/services";
 
-export default function forms() {
+export default function forms(formSelector, timerId) {
 
-  const forms = document.querySelectorAll('form');
+  const forms = document.querySelectorAll(formSelector);
 
   const message = {
     loading: 'img/form/spinner.svg',
@@ -13,25 +14,6 @@ export default function forms() {
   forms.forEach(form => {
     bindPostData(form);
   });
-
-  const postData = async (url, data) => {
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {'Content-type': 'application/json; charset=utf-8'},
-      body: data
-    });
-    return await res.json();
-  };
-
-  async function getResource(url) {
-    let res = await fetch(url);
-
-    if (!res.ok) {
-      throw new Error(`Could not fetch ${url}, status: ${res.status}`);
-    }
-
-    return await res.json();
-  }
 
   function bindPostData(form) {
     form.addEventListener('submit', (event) => {
@@ -64,7 +46,7 @@ export default function forms() {
     const elementToHide = document.querySelector('.modal__dialog');
 
     elementToHide.classList.add('hide');
-    openModal();
+    openModal('.modal', timerId);
 
     const thanksModal = document.createElement('div');
     thanksModal.classList.add('modal__dialog');
@@ -79,7 +61,7 @@ export default function forms() {
       thanksModal.remove();
       elementToHide.classList.add('show');
       elementToHide.classList.remove('hide');
-      closeModalWindow();
+      closeModalWindow('.modal');
     }, 4000);
   }
 

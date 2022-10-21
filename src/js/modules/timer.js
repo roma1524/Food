@@ -1,6 +1,5 @@
-export default function timer() {
+export default function timer(id, deadLine) {
 
-  const deadLine = '2022-11-18';
 
   function getTimeRemaining(endTime) {
     let days, hours, minutes, seconds;
@@ -51,6 +50,6 @@ export default function timer() {
     }
   }
 
-  setClock('.timer', deadLine);
+  setClock(id, deadLine);
 
 };

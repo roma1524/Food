@@ -1,3 +1,5 @@
+import {getResource} from "../services/services";
+
 export default function cards() {
   class MenuCard {
     constructor(src, alt, title, descr, price, parentSelector, ...classes) {
@@ -46,4 +48,5 @@ export default function cards() {
         new MenuCard(img, altimg, title, descr, price, ".menu .container").render();
       });
     });
+
 };
